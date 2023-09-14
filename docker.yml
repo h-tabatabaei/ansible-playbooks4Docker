@@ -1,0 +1,11 @@
+---
+- name: Install and config Docker service for ubuntu
+  hosts: UBUNTU
+  vars_files:
+    - ./roles/docker/vars/extVar.yml
+  become: true
+    #  become_method: sudo
+  pre_tasks:
+    - shell: echo 'will apply role to install docker'
+  roles:
+     - docker

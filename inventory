@@ -1,0 +1,7 @@
+[all:vars]
+ansible_connection=ssh
+ansible_user=root
+
+[UBUNTU]
+192.168.57.7		#APP	focal_release
+

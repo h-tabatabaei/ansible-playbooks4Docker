@@ -1,0 +1,79 @@
+---
+- name: playbook to remove docker old versions
+  ignore_errors: true
+  ansible.builtin.apt: 
+    pkg:
+    - docker.io
+    - docker-compose
+    - dcoker-doc
+    - podman-docker
+    state: absent
+  register: aptRmOut
+- name: Display apt output
+  debug:
+    var: aptRmOut
+
+- name: playbook to install dependent packages to add docker repository
+  ignore_errors: true
+  ansible.builtin.apt: 
+    pkg:
+    - ca-certificates
+    - curl
+    - gnupg
+    update_cache: yes
+  register: aptDepRepo
+- name: Display apt output
+  debug:
+    var: aptDepRepo
+
+- name: set permission for keyrings file
+  ignore_errors: true
+  changed_when: false
+  command: install -m 0755 -d /etc/apt/keyrings
+  register: keyringPrm
+- name: Display keyrings permission output
+  debug:
+    var: keyringPrm
+ 
+
+- name: playbook to download gpg file
+  ignore_errors: true
+  changed_when: false
+  shell: curl -fsSL {{ gpgKeyUrl }} |  gpg --dearmor -o {{ gpgKeyDes }}
+  register: gpg
+- name: Display gpg key download ouptut
+  debug:
+    var: gpg
+
+- name: playbook to change gpg attr
+  ignore_errors: true
+  changed_when: false
+  command: chmod a+r {{ gpgKeyDes }}
+  register: gpgAttr
+- name: Display change gpg  attribute ouptut
+  debug:
+    var: gpgAttr
+
+- name: playbook to create repo file
+  ignore_errors: true
+  changed_when: false
+  shell: echo {{ repoFile }}
+  register: echoRepo
+- name: Display echo Repo ouptut
+  debug:
+    var: echoRepo
+
+- name: playbook to install docker packages
+  ignore_errors: true
+  ansible.builtin.apt: 
+    pkg:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+    update_cache: yes
+  register: aptInstDocker
+- name: Display docker installation ouptut
+  debug:
+    var: aptInstDocker
